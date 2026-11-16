@@ -1,0 +1,12 @@
+# ambiente virtuale
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# database locale
+db.sqlite3
+
+# segreti
+.env
