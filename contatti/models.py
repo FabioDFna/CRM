@@ -53,7 +53,7 @@ class RuoloDipendente(models.Model):
 class Dipendente(models.Model):
     nome = models.CharField(max_length=100)
     cognome = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True)
     ruolo = models.ForeignKey(RuoloDipendente, on_delete=models.PROTECT)
     utente = models.OneToOneField(
         settings.AUTH_USER_MODEL,
