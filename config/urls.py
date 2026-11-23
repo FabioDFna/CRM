@@ -14,9 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import include
+from contatti import views as viste_contatti
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # La radice del sito è la dashboard, non l'elenco contatti.
+    path("", viste_contatti.dashboard, name="dashboard"),
+    path("contatti/", include("contatti.urls")),
+    path("admin/", admin.site.urls),
 ]

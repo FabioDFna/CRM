@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}CRM{% endblock %}</title>
+    {# Tailwind dal CDN: le classi class="..." disegnano la pagina. #}
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-6">
+            <a href="{% url 'dashboard' %}" class="font-semibold text-slate-900">CRM</a>
+            <nav class="flex flex-wrap items-center gap-4 text-sm">
+                <a href="{% url 'elenco_contatti' %}" class="text-slate-600 hover:text-slate-900">Contatti</a>
+                <a href="{% url 'elenco_clienti' %}" class="text-slate-600 hover:text-slate-900">Clienti</a>
+                <a href="{% url 'elenco_progetti' %}" class="text-slate-600 hover:text-slate-900">Progetti</a>
+                <a href="{% url 'elenco_offerte' %}" class="text-slate-600 hover:text-slate-900">Offerte</a>
+                <a href="{% url 'elenco_attivita' %}" class="text-slate-600 hover:text-slate-900">Attività</a>
+                <a href="{% url 'elenco_dipendenti' %}" class="text-slate-600 hover:text-slate-900">Dipendenti</a>
+            </nav>
+            {# details apre e chiude il menu. Le quattro voci sono le stesse dell'admin. #}
+            <details class="relative ml-auto">
+                <summary class="impostazioni cursor-pointer" aria-label="Impostazioni">
+                    <svg class="w-5 h-5 fill-slate-700" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.02 7.02 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.22-1.13.53-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.31.6.22l2.39-.96c.5.41 1.04.72 1.63.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.22 1.13-.53 1.63-.94l2.39.96c.22.09.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z" />
+                    </svg>
+                </summary>
+                <div
+                    class="absolute right-0 z-10 mt-2 w-52 rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg">
+                    <a class="block px-3 py-2 hover:bg-slate-50" href="{% url 'impostazioni_ruoli' %}">Ruoli
+                        dipendenti</a>
+                    <a class="block px-3 py-2 hover:bg-slate-50" href="{% url 'impostazioni_stati_progetto' %}">Stati
+                        progetto</a>
+                    <a class="block px-3 py-2 hover:bg-slate-50" href="{% url 'impostazioni_stati_offerta' %}">Stati
+                        offerta</a>
+                    <a class="block px-3 py-2 hover:bg-slate-50" href="{% url 'impostazioni_stati_attivita' %}">Stati
+                        attività</a>
+                </div>
+            </details>
+        </div>
+    </header>
+    <style>
+        summary.impostazioni::-webkit-details-marker {
+            display: none;
+        }
+
+        summary.impostazioni {
+            list-style: none;
+        }
+    </style>
+    <main class="max-w-6xl mx-auto px-4 py-6">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

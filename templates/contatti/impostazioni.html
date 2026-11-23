@@ -1,0 +1,72 @@
+{% extends "contatti/base.html" %}
+
+{% block title %}{{ titolo }}{% endblock %}
+
+{% block content %}
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-semibold">{{ titolo }}</h1>
+        {# Senza id il salvataggio crea una voce nuova. #}
+        <button type="button" title="Nuova voce" onclick="apriVoce()" class="azioni">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 5h2v14h-2zM5 11h14v2H5z" />
+            </svg>
+        </button>
+    </div>
+    <table class="w-full text-sm mt-4">
+        <tr class="text-left text-slate-500">
+            <th class="py-2">Nome</th>
+            <th></th>
+        </tr>
+        {% for voce in voci %}
+        <tr class="border-t border-slate-100">
+            <td class="py-2">{{ voce.nome }}</td>
+            <td class="text-right">
+                <button type="button" title="Modifica" class="azioni" data-id="{{ voce.pk }}"
+                    data-nome="{{ voce.nome }}" onclick="apriVoce(this)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                </button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td class="py-3 text-slate-500" colspan="2">Nessuna voce.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+<dialog id="modulo-voce" class="rounded-xl p-5">
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="voce_id" id="voce-id">
+        <p>Nome<br><input name="nome" id="voce-nome" required class="border border-slate-300 rounded px-2 py-1 mt-1">
+        </p>
+        <button type="submit" class="mt-3 bg-slate-900 text-white rounded-lg px-3 py-2 text-sm">Salva</button>
+        <button type="button" onclick="document.getElementById('modulo-voce').close()">Annulla</button>
+    </form>
+</dialog>
+<style>
+    .azioni {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    .azioni svg {
+        width: 22px;
+        height: 22px;
+        fill: #333;
+    }
+</style>
+<script>
+    // Con il bottone Modifica copia nome e id. Senza bottone, il campo resta vuoto.
+    function apriVoce(bottone) {
+        document.getElementById("voce-id").value = bottone ? bottone.dataset.id : "";
+        document.getElementById("voce-nome").value = bottone ? bottone.dataset.nome : "";
+        document.getElementById("modulo-voce").showModal();
+    }
+</script>
+{% endblock %}

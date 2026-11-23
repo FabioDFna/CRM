@@ -1,0 +1,29 @@
+{% extends "contatti/base.html" %}
+
+{% block title %}{{ contatto.nome }} {{ contatto.cognome }}{% endblock %}
+
+{% block content %}
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 max-w-xl">
+    <h1 class="text-xl font-semibold">{{ contatto.nome }} {{ contatto.cognome }}</h1>
+    <dl class="mt-4 space-y-3 text-sm">
+        <div>
+            <dt class="text-slate-500">Email</dt>
+            <dd>{{ contatto.email }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500">Telefono</dt>
+            <dd>{{ contatto.telefono }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500">Note</dt>
+            <dd>{{ contatto.note|default:"—" }}</dd>
+        </div>
+    </dl>
+    {% if cliente %}
+    <p class="mt-5">
+        <a href="{% url 'scheda_cliente' cliente.pk %}" class="text-sm font-medium text-slate-900 underline">Apri la
+            scheda cliente</a>
+    </p>
+    {% endif %}
+</section>
+{% endblock %}

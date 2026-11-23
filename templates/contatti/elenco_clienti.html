@@ -1,0 +1,50 @@
+{% extends "contatti/base.html" %}
+
+{% block title %}Clienti{% endblock %}
+
+{% block content %}
+<section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <h1 class="text-xl font-semibold">Clienti</h1>
+    <table class="w-full text-sm mt-4">
+        <tr class="text-left text-slate-500">
+            <th class="py-2">Nome</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Città</th>
+            <th></th>
+        </tr>
+        {% for cliente in clienti %}
+        <tr class="border-t border-slate-100">
+            <td class="py-2">{{ cliente.nome }} {{ cliente.cognome }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.citta|default:"—" }}</td>
+            <td class="text-right">
+                {# Apre la scheda con i dati e le tre linguette. #}
+                <a href="{% url 'scheda_cliente' cliente.pk %}" title="Scheda cliente" class="azioni">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h5v2H8v-2z" />
+                    </svg>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td class="py-3 text-slate-500" colspan="5">Nessun cliente.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+<style>
+    .azioni {
+        display: inline-flex;
+    }
+
+    .azioni svg {
+        width: 22px;
+        height: 22px;
+        fill: #333;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,14 @@
+---
+description: Le azioni nelle pagine del CRM sono icone, con il testo nel title
+globs: templates/**/*.html
+alwaysApply: true
+---
+
+# Azioni come icone
+
+Nelle pagine del sito, Modifica, Elimina, Rendi cliente, Scheda cliente e le azioni simili sono icone, mai un link o un pulsante con testo visibile.
+
+- Usa un `<button>` o un `<a>` che contiene solo un `<svg>`.
+- Il nome dell'azione va in `title`, così compare al passaggio del mouse.
+- Tieni la stessa misura delle altre icone della colonna Azioni: `svg` 22px.
+- Aggiungi un commento breve in italiano sul pezzo nuovo.
