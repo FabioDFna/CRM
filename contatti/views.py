@@ -5,6 +5,7 @@ from .models import (
     Attivita,
     Cliente,
     Contatto,
+    Dipendente,
     Offerta,
     Progetto,
     RuoloDipendente,
@@ -131,6 +132,9 @@ def scheda_cliente(request, cliente_id):
             "offerte": offerte,
             "attivita": attivita,
             "stati_offerta": StatoOfferta.objects.order_by("nome"),
+            "dipendenti": Dipendente.objects.filter(eliminato=False).order_by(
+                "cognome", "nome"
+            ),
         },
     )
 
@@ -187,6 +191,10 @@ def aggiorna_stato_offerta(request, cliente_id, offerta_id):
         eliminato=False,
     )
     if request.method == "POST":
+        # Stato 2, Accettata: l'offerta resta com'è.
+        if offerta.stato_id == 2:
+            destinazione = reverse("scheda_cliente", args=[cliente.pk])
+            return redirect(f"{destinazione}?tab=offerte")
         stato = get_object_or_404(StatoOfferta, pk=request.POST.get("stato_id"))
         offerta.stato = stato
         offerta.save()
@@ -245,3 +253,25 @@ def elenco_impostazione(request, chiave):
         "contatti/impostazioni.html",
         {"titolo": titolo, "voci": voci},
     )
+
+
+# Scrive il dipendente sull'attività e mette lo stato 2, Assegnata.
+def assegna_attivita(request, cliente_id, attivita_id):
+    cliente = get_object_or_404(Cliente, pk=cliente_id, eliminato=False)
+    attivita = get_object_or_404(
+        Attivita,
+        pk=attivita_id,
+        progetto__cliente=cliente,
+        eliminato=False,
+    )
+    if request.method == "POST":
+        dipendente = get_object_or_404(
+            Dipendente,
+            pk=request.POST.get("dipendente_id"),
+            eliminato=False,
+        )
+        attivita.dipendente = dipendente
+        attivita.stato_id = 2
+        attivita.save()
+    destinazione = reverse("scheda_cliente", args=[cliente.pk])
+    return redirect(f"{destinazione}?tab=attivita")

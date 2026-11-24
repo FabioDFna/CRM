@@ -66,4 +66,10 @@ urlpatterns = [
     ),
     # /contatti/clienti/ è l'elenco. /contatti/clienti/3/ resta la scheda.
     path("clienti/", views.elenco_clienti, name="elenco_clienti"),
+    # /contatti/clienti/3/attivita/8/assegna/ collega il dipendente all'attività 8.
+    path(
+        "clienti/<int:cliente_id>/attivita/<int:attivita_id>/assegna/",
+        views.assegna_attivita,
+        name="assegna_attivita",
+    ),
 ]

@@ -95,8 +95,11 @@
                     <td>{{ offerta.progetto }}</td>
                     <td>{{ offerta.importo }}</td>
                     <td>
-                        <form method="post" action="{% url 'aggiorna_stato_offerta' cliente.pk offerta.pk %}"
-                            class="flex items-center gap-2">
+                        {# Stato 2 è Accettata: la riga mostra solo il nome, senza menu né conferma. #}
+                        {% if offerta.stato_id == 2 %}
+                        {{ offerta.stato }}
+                        {% else %}
+                        <form method="post" action="{% url 'aggiorna_stato_offerta' cliente.pk offerta.pk %}" class="flex items-center gap-2">
                             {% csrf_token %}
                             <select name="stato_id" class="border border-slate-300 rounded px-2 py-1">
                                 {% for stato in stati_offerta %}
@@ -109,6 +112,7 @@
                                 </svg>
                             </button>
                         </form>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
@@ -131,8 +135,19 @@
                     <td class="py-2">{{ voce.titolo }}</td>
                     <td>{{ voce.progetto }}</td>
                     <td>{{ voce.stato }}</td>
-                    <td>{% if voce.dipendente %}{{ voce.dipendente.nome }} {{ voce.dipendente.cognome }}{% else %}—
-                        {%endif %}</td>
+                    <td>
+                        {% if voce.dipendente %}
+                        {{ voce.dipendente.nome }} {{ voce.dipendente.cognome }}
+                        {% else %}
+                        {# Apre la finestra con i dipendenti. L'indirizzo è quello di questa attività. #}
+                        <button type="button" title="Assegna" class="azioni"
+                            data-url="{% url 'assegna_attivita' cliente.pk voce.pk %}"
+                            data-titolo="{{ voce.titolo }}"
+                            onclick="apriAssegna(this)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-8 1.7-8 4v2h16v-2c0-2.3-4.7-4-8-4z"/></svg>
+                        </button>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -168,6 +183,13 @@
     const tabIniziale = new URLSearchParams(window.location.search).get("tab");
     if (tabIniziale) {
         apriTab(tabIniziale);
+    }
+
+    // Copia indirizzo e titolo dell'attività, poi apre la finestra.
+    function apriAssegna(bottone) {
+        document.getElementById("form-assegna").action = bottone.dataset.url;
+        document.getElementById("assegna-titolo").textContent = bottone.dataset.titolo;
+        document.getElementById("modulo-assegna").showModal();
     }
 </script>
 <dialog id="modulo-progetto" class="rounded-xl p-5">
@@ -205,6 +227,22 @@
                 class="border border-slate-300 rounded px-2 py-1 mt-1"></p>
         <button type="submit" class="mt-3 bg-slate-900 text-white rounded-lg px-3 py-2 text-sm">Salva</button>
         <button type="button" onclick="document.getElementById('modulo-offerta').close()">Annulla</button>
+    </form>
+</dialog>
+
+<dialog id="modulo-assegna" class="rounded-xl p-5">
+    <form method="post" id="form-assegna">
+        {% csrf_token %}
+        <p>Assegna «<strong id="assegna-titolo"></strong>» a:</p>
+        <p class="mt-3">
+            <select name="dipendente_id" required class="border border-slate-300 rounded px-2 py-1">
+                {% for dipendente in dipendenti %}
+                <option value="{{ dipendente.pk }}">{{ dipendente.nome }} {{ dipendente.cognome }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <button type="submit" class="mt-3 bg-slate-900 text-white rounded-lg px-3 py-2 text-sm">Salva</button>
+        <button type="button" onclick="document.getElementById('modulo-assegna').close()">Annulla</button>
     </form>
 </dialog>
 {% endblock %}
