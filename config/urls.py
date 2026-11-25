@@ -25,4 +25,11 @@ urlpatterns = [
     path("", viste_contatti.dashboard, name="dashboard"),
     path("contatti/", include("contatti.urls")),
     path("admin/", admin.site.urls),
+    # API interne usate dalla dashboard.
+    path("api/dashboard/", viste_contatti.api_dashboard, name="api_dashboard"),
+    path(
+        "api/finanza/notizie/",
+        viste_contatti.api_notizie_finanziarie,
+        name="api_notizie_finanziarie",
+    ),
 ]

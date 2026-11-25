@@ -15,6 +15,14 @@ from .models import (
 )
 from decimal import Decimal, InvalidOperation
 from django.urls import reverse
+import json
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import urlopen
+
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 # get_object_or_404 cerca il contatto. Se non esiste, o è eliminato, risponde 404.
 
@@ -275,3 +283,72 @@ def assegna_attivita(request, cliente_id, attivita_id):
         attivita.save()
     destinazione = reverse("scheda_cliente", args=[cliente.pk])
     return redirect(f"{destinazione}?tab=attivita")
+
+
+@require_GET
+def api_dashboard(request):
+    # I conteggi escludono i record segnati come eliminati.
+    return JsonResponse(
+        {
+            "clienti": Cliente.objects.filter(eliminato=False).count(),
+            "progetti": Progetto.objects.filter(eliminato=False).count(),
+            "offerte": Offerta.objects.filter(eliminato=False).count(),
+            "attivita": Attivita.objects.filter(eliminato=False).count(),
+        }
+    )
+
+
+@require_GET
+def api_notizie_finanziarie(request):
+    # Se la chiave manca, segnaliamo un errore di configurazione.
+    if not settings.FINNHUB_API_KEY:
+        return JsonResponse(
+            {"error": "La chiave Finnhub non è configurata."}, status=500
+        )
+
+    # La categoria general restituisce notizie finanziarie generali.
+    parametri = urlencode(
+        {
+            "category": "general",
+            "token": settings.FINNHUB_API_KEY,
+        }
+    )
+
+    url = f"https://finnhub.io/api/v1/news?{parametri}"
+
+    try:
+        # Il timeout evita che una risposta lenta blocchi a lungo la richiesta.
+        with urlopen(url, timeout=10) as risposta:
+            dati = json.loads(risposta.read().decode("utf-8"))
+    except HTTPError as errore:
+        # Mostriamo il codice HTTP, senza esporre la chiave API.
+        return JsonResponse(
+            {"error": f"Finnhub ha risposto con HTTP {errore.code}."},
+            status=502,
+        )  # Non restituiamo dettagli del provider o la chiave al browser.
+        return JsonResponse(
+            {"error": "Non è stato possibile recuperare le notizie."}, status=500
+        )
+    # Verifichiamo che il provider abbia restituito la lista attesa.
+    if not isinstance(dati, list):
+        return JsonResponse(
+            {"error": "Il servizio di notizie ha restituito dati non validi."},
+            status=500,
+        )
+    # Inviamo alla dashboard al massimo 10 notizie, con solo i campi usati.
+    notizie = []
+    for articolo in dati[:10]:
+        if not isinstance(articolo, dict):
+            continue
+
+        notizie.append(
+            {
+                "titolo": articolo.get("headline", ""),
+                "fonte": articolo.get("source", ""),
+                "url": articolo.get("url", ""),
+                "riassunto": articolo.get("summary", ""),
+                "timestamp": articolo.get("datetime", 0),
+            }
+        )
+
+    return JsonResponse({"notizie": notizie})

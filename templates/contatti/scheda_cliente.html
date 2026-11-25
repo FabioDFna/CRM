@@ -46,7 +46,6 @@
 
         <div data-pannello="progetti" class="mt-4">
             <div class="flex justify-end">
-                {# Apre la finestra. Il cliente è già quello della scheda. #}
                 <button type="button" title="Nuovo progetto" class="azioni"
                     onclick="document.getElementById('modulo-progetto').showModal()">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -54,29 +53,30 @@
                     </svg>
                 </button>
             </div>
-            <td class="text-right">
-                {# Il progetto è già noto: la finestra chiede solo titolo e importo. #}
-                <button type="button" title="Nuova offerta" class="azioni" data-id="{{ progetto.pk }}"
-                    data-titolo="{{ progetto.titolo }}" onclick="apriOfferta(this)">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path
-                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM11 18v-3H8v-2h3v-3h2v3h3v2h-3v3h-2z" />
-                    </svg>
-                </button>
-            </td>
+
             <table class="w-full text-sm">
                 <tr class="text-left text-slate-500">
                     <th class="py-2">Titolo</th>
                     <th>Stato</th>
+                    <th></th>
                 </tr>
                 {% for progetto in progetti %}
                 <tr class="border-t border-slate-100">
                     <td class="py-2">{{ progetto.titolo }}</td>
                     <td>{{ progetto.stato }}</td>
+                    <td class="text-right">
+                        <button type="button" title="Nuova offerta" class="azioni" data-id="{{ progetto.pk }}"
+                            data-titolo="{{ progetto.titolo }}" onclick="apriOfferta(this)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM11 18v-3H8v-2h3v-3h2v3h3v2h-3v3h-2z" />
+                            </svg>
+                        </button>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td class="py-3 text-slate-500" colspan="2">Nessun progetto.</td>
+                    <td class="py-3 text-slate-500" colspan="3">Nessun progetto.</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -99,11 +99,13 @@
                         {% if offerta.stato_id == 2 %}
                         {{ offerta.stato }}
                         {% else %}
-                        <form method="post" action="{% url 'aggiorna_stato_offerta' cliente.pk offerta.pk %}" class="flex items-center gap-2">
+                        <form method="post" action="{% url 'aggiorna_stato_offerta' cliente.pk offerta.pk %}"
+                            class="flex items-center gap-2">
                             {% csrf_token %}
                             <select name="stato_id" class="border border-slate-300 rounded px-2 py-1">
                                 {% for stato in stati_offerta %}
-                                <option value="{{ stato.pk }}" {% if stato.pk == offerta.stato_id %}selected{% endif %}>{{ stato.nome }}</option>
+                                <option value="{{ stato.pk }}" {% if stato.pk==offerta.stato_id %}selected{% endif %}>{{
+                                    stato.nome }}</option>
                                 {% endfor %}
                             </select>
                             <button type="submit" title="Aggiorna stato" class="azioni">
@@ -141,10 +143,12 @@
                         {% else %}
                         {# Apre la finestra con i dipendenti. L'indirizzo è quello di questa attività. #}
                         <button type="button" title="Assegna" class="azioni"
-                            data-url="{% url 'assegna_attivita' cliente.pk voce.pk %}"
-                            data-titolo="{{ voce.titolo }}"
+                            data-url="{% url 'assegna_attivita' cliente.pk voce.pk %}" data-titolo="{{ voce.titolo }}"
                             onclick="apriAssegna(this)">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-8 1.7-8 4v2h16v-2c0-2.3-4.7-4-8-4z"/></svg>
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-8 1.7-8 4v2h16v-2c0-2.3-4.7-4-8-4z" />
+                            </svg>
                         </button>
                         {% endif %}
                     </td>
